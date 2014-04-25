@@ -1,10 +1,21 @@
 <ul>
     <li ng-repeat="activity in activities">
-        <span>{{ activity.date | date }}</span> <span>{{ activity.type }}</span>
-        <ul>
-            <li ng-repeat="chef in activity.chefs">
-                <a ng-href="{{ chef.link }}">{{ chef.name }}</a>
-            </li>
-        </ul>
+        <span>{{ activity.date | date }}</span>
+        <p ng-show="activity.chefsAdded.length > 0">
+            Add
+            <ul>
+                <li ng-repeat="chef in activity.chefsAdded">
+                    <a ng-href="{{ chef.link }}">{{ chef.name }}</a>
+                </li>
+            </ul>
+        </p>
+        <p ng-show="activity.chefsRemoved.length > 0">
+            Removed
+            <ul>
+                <li ng-repeat="chef in activity.chefsRemoved">
+                    {{ chef.name }}
+                </li>
+            </ul>
+        </p>
     </li>
 </ul>

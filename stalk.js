@@ -5,62 +5,83 @@ async = require('async');
 
 var Conf = require('./conf.js');
 
-var chefs = [];
-var newChefs = [];
-
 module.exports = {
     run: function (db, cb) {
-        request(Conf.stalk_url, function (err, response, body) {
-            if (err) {
-                cb(err);
-                return;
-            }
+        var chefs = [];
+        var newChefs = [];
+        var removedChefs = [];
 
-            var $ = cheerio.load(body);
+        async.waterfall([
+            function (next) {
 
-            $('.item').each(function () {
-                chefs.push({
-                    name: $(this).find('h2 a').text(),
-                    city: $(this).find('.item h2:nth-child(3)').text(),
-                    link: $(this).find('.item a.product-image').attr('href')
-                });
-            });
-
-            async.each(chefs, function (chef, nextChef) {
-                db.Chef.findOne({name: chef.name}, function (err, obj) {
+                request(Conf.stalk_url, function (err, response, body) {
                     if (err) {
-                        nextChef(err);
-                    } else {
-                        if (!obj) {
-                            db.Chef.create({
-                                name: chef.name,
-                                link: chef.link,
-                                since: new Date(),
-                                status: 'ACTIVE'
-                            }, function (err) {
-                                if (err) {
-                                    nextChef(err);
-                                } else {
-                                    newChefs.push(chef);
-                                    nextChef(null);
-                                }
-                            });
-                        } else {
-                           nextChef(null);
-                        }
+                        next(err);
+                        return;
                     }
-                });
-            }, function (err) {
-                if (err) {
-                    cb(err);
-                    return;
-                }
 
-                if (newChefs.length > 0) {
+                    var $ = cheerio.load(body);
+                    $('.item').each(function () {
+                        chefs.push({
+                            name: $(this).find('h2 a').text().trim(),
+                            city: $(this).find('.item h2:nth-child(3)').text().trim(),
+                            link: $(this).find('.item a.product-image').attr('href').trim()
+                        });
+                    });
+                    next(null);
+                });
+            },
+            function (next) {
+                async.each(chefs, function (chef, nextChef) {
+                    db.Chef.findOne({name: chef.name}, function (err, obj) {
+                        if (err) {
+                            nextChef(err);
+                        } else {
+                            if (!obj) {
+                                db.Chef.create({
+                                    name: chef.name,
+                                    link: chef.link,
+                                    since: new Date(),
+                                    status: 'ACTIVE'
+                                }, function (err) {
+                                    if (err) {
+                                        nextChef(err);
+                                    } else {
+                                        newChefs.push(chef);
+                                        nextChef(null);
+                                    }
+                                });
+                            } else {
+                               nextChef(null);
+                            }
+                        }
+                    });
+                }, next);
+            },
+            function (next) {
+                var chefsName = _.pluck(chefs, 'name');
+                db.Chef.find({name: {$nin: chefsName}}, function (err, chefsToDeactivate) {
+                    async.each(chefsToDeactivate, function (chefToDeactivate, nextChef) {
+                        removedChefs.push({
+                            name: chefToDeactivate.name
+                        });
+                        chefToDeactivate.status = 'NOACTIVE';
+                        chefToDeactivate.save(nextChef);
+                    }, next);
+                });
+            },
+            function (next) {
+
+                if (newChefs.length > 0 || removedChefs.length > 0) {
                     db.Activity.create({
                         date: new Date(),
-                        type: 'ADD',
-                        chefs: _.map(newChefs, function (chef) {
+                        chefsAdded: _.map(newChefs, function (chef) {
+                            return {
+                                name: chef.name,
+                                link: chef.link
+                            };
+                        }),
+                        chefsRemoved: _.map(removedChefs, function (chef) {
                             return {
                                 name: chef.name,
                                 link: chef.link
@@ -70,7 +91,9 @@ module.exports = {
                 } else {
                    cb(null);
                 }
-            });
+            }
+        ], function (err) {
+            cb(err);
         });
     }
 };

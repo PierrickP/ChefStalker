@@ -18,8 +18,11 @@ database.register('Chef', new iridium.Model(database, 'chef', {
 
 database.register('Activity', new iridium.Model(database, 'activity', {
     date: Date,
-    type: /ADD|REMOVED/,
-    chefs: [{
+    chefsAdded: [{
+        name: String,
+        link: String
+    }],
+    chefsRemoved: [{
         name: String,
         link: String
     }]
