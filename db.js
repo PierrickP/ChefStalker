@@ -3,8 +3,10 @@ var iridium = require('iridium');
 var Conf = require('./conf.js');
 
 var database = new iridium({
-    connect_url: Conf.connect_url,
-    database: 'ChefStalk'
+    host: Conf.host,
+    username: Conf.username,
+    password: Conf.password,
+    database: Conf.database
 });
 
 database.register('Chef', new iridium.Model(database, 'chef', {

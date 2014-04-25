@@ -3,7 +3,7 @@
         <span>{{ activity.date | date }}</span> <span>{{ activity.type }}</span>
         <ul>
             <li ng-repeat="chef in activity.chefs">
-                <a ng-href="chef.link">{{ chef.name }}</a>
+                <a ng-href="{{ chef.link }}">{{ chef.name }}</a>
             </li>
         </ul>
     </li>

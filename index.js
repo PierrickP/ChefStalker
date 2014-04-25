@@ -24,7 +24,7 @@ database.init(function (err, db) {
         });
     });
 
-    app.get('/scrap', function (req, res) {
+    app.get('/stalk', function (req, res) {
         stalk.run(db, function (err) {
             if (err) {
                 res.json(500, {error: err});
