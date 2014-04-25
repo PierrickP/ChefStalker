@@ -10,7 +10,7 @@ var newChefs = [];
 
 module.exports = {
     run: function (db, cb) {
-        request(Conf.url, function (err, response, body) {
+        request(Conf.stalk_url, function (err, response, body) {
             if (err) {
                 cb(err);
                 return;
