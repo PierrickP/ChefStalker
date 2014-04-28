@@ -1,1 +1,2 @@
-require("./stalk.js");
+require('./stalk.js');
+require('./stalkers.js');
