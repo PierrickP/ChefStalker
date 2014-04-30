@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+
+    {% if production %}
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    {% else %}
+        <link rel="stylesheet/less" type="text/css" href="/style.less">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.0/less.min.js"></script>
+    {% endif %}
 </head>
-<body>
+<body class="center w960p small-w100">
     <div ng-view></div>
     <script src="/bower_components/angular/angular.min.js"></script>
     <script src="/bower_components/angular-resource/angular-resource.min.js"></script>

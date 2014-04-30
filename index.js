@@ -14,6 +14,8 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
+app.locals.production = (process.env.NODE_ENV === 'production');
+
 database(function (err, db) {
     if (err) throw err;
 
@@ -51,6 +53,16 @@ database(function (err, db) {
                 res.json(500, {error: err});
             } else {
                 res.json({status: 'ok'});
+            }
+        });
+    });
+
+    app.get('/chefs', function (req, res) {
+        db.Chef.find({}, {sort: {status: 1}, wrap: false}, function (err, data) {
+            if (err) {
+                res.json(500, {error: err});
+            } else {
+                res.json({chefs: data});
             }
         });
     });
