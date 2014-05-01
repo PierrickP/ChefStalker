@@ -17,6 +17,8 @@ app.set('views', __dirname + '/views');
 database(function (err, db) {
     if (err) throw err;
 
+    global.Mail = require('./mailer.js')(db, conf);
+
     app.post('/stalkers', function (req, res) {
         var email = req.param('email');
 

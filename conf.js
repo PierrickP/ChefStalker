@@ -5,6 +5,7 @@ module.exports = {
     username: process.env.MONGODB_USER,
     password: process.env.MONGODB_PASSWORD,
     database: process.env.MONGODB_DATABASE || 'ChefStalk',
+    mail_type: 'SMTP',
     mail_user: process.env.MANDRILL_USERNAME,
     mail_pass: process.env.MANDRILL_APIKEY
 };

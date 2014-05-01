@@ -4,8 +4,10 @@ nock = require('nock');
 var conf = {
     stalk_url: 'http://localhost/chef', // will be spoof by nock
     host: 'localhost:27017',
-    database: 'ChefStalk_test'
+    database: 'ChefStalk_test',
+    mail_type: 'stub',
 };
+
 var database = require('../db.js')(conf);
 var stalk = require('../stalk.js')(conf);
 
@@ -16,6 +18,9 @@ describe('Stalk', function () {
 	before(function (cb) {
 		database(function (err, d) {
 			db = d;
+
+			global.Mail = require('../mailer.js')(db, conf);
+
 			db.Chef.remove({}, function () {
 				db.Activity.remove({}, function () {
 					cb();

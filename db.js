@@ -27,6 +27,10 @@ module.exports = function (conf) {
         }]
     }));
 
+    database.Activity.on('creating', function (document) {
+        Mail.sendNewActivity(document);
+    });
+
     database.register('Stalkers', new iridium.Model(database, 'stalkers', {
         email: {
             $type: /.+@.+\..+/,
