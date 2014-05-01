@@ -1,12 +1,19 @@
 var database = require('../db.js'),
 should = require('should');
 
+var conf = {
+    stalk_url: 'http://localhost/chef', // will be spoof by nock
+    host: 'localhost:27017',
+    database: 'ChefStalk_test'
+};
+var database = require('../db.js')(conf);
+
 var db;
 
 describe('Stalkers', function () {
 
     before(function (cb) {
-        database.init(function (err, dbconnection) {
+        database(function (err, dbconnection) {
             db = dbconnection;
             db.Stalkers.remove({}, function () {
                 cb();

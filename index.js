@@ -4,9 +4,9 @@ bodyParser = require('body-parser'),
 swig = require('swig');
 
 var app = express();
-var database = require('./db.js');
-var Conf = require('./conf.js');
-var stalk = require('./stalk.js');
+var conf = require('./conf.js');
+var database = require('./db.js')(conf);
+var stalk = require('./stalk.js')(conf);
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
@@ -14,7 +14,7 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
-database.init(function (err, db) {
+database(function (err, db) {
     if (err) throw err;
 
     app.post('/stalkers', function (req, res) {
@@ -57,7 +57,7 @@ database.init(function (err, db) {
         res.render('spa.html');
     });
 
-    app.listen(Conf.port, function () {
-        console.log('Server run on ' + Conf.port);
+    app.listen(conf.port, function () {
+        console.log('Server run on ' + conf.port);
     });
 });

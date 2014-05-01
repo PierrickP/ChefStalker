@@ -1,57 +1,27 @@
-var stalk = require('../stalk.js'),
-should = require('should'),
+var should = require('should'),
 nock = require('nock');
 
-function Chef(data) {
-	this.name = data.name;
-	this.status = data.status;
-}
-
-Chef.prototype.save = function (cb) {
-	cb(null, this);
+var conf = {
+    stalk_url: 'http://localhost/chef', // will be spoof by nock
+    host: 'localhost:27017',
+    database: 'ChefStalk_test'
 };
+var database = require('../db.js')(conf);
+var stalk = require('../stalk.js')(conf);
 
-var db = {
-	Chef: {
-		data: [],
-		create: function (data, cb) {
-			db.Chef.data.push(new Chef(data));
-			cb(null, data);
-		},
-		find: function (query, cb) {
-			var removed = [];
-
-			db.Chef.data.forEach(function (el) {
-				if (query.name['$nin'].indexOf(el.name) === -1) {
-					removed.push(el);
-				}
-			});
-			cb(null, removed);
-		},
-		findOne: function (query, cb) {
-			var chef = null;
-			db.Chef.data.forEach(function (el) {
-				if (el.name == query.name) {
-					chef = el;
-				}
-			});
-			cb(null, chef);
-		}
-	},
-	Activity: {
-		data: [],
-		create: function (data, cb) {
-			db.Activity.data.push(data);
-			cb(null, data);
-		}
-	}
-};
+var db;
 
 describe('Stalk', function () {
 
-	before(function () {
-		db.Chef.data = [];
-		db.Activity.data = [];
+	before(function (cb) {
+		database(function (err, d) {
+			db = d;
+			db.Chef.remove({}, function () {
+				db.Activity.remove({}, function () {
+					cb();
+				});
+			});
+		});
 	});
 
 	describe('After first run - chef database', function () {
@@ -63,23 +33,34 @@ describe('Stalk', function () {
 
 		it('Should have 2 chefs', function (cb) {
 			stalk.run(db, function () {
-				db.Chef.data.should.have.length(2);
+				db.Chef.count(function (err, data) {
+					data.should.equal(2);
+					cb();
+				});
+			});
+		});
+
+		it('Should be ACTIVE', function (cb) {
+			db.Chef.find({}, function (err, data) {
+				data.forEach(function (chef) {
+					chef.status.should.equal('ACTIVE');
+				});
 				cb();
 			});
 		});
 
-		it('Should be ACTIVE', function () {
-			db.Chef.data.forEach(function (chef){
-				chef.status.should.equal('ACTIVE');
+		it('Should have name for the first chef', function (cb) {
+			db.Chef.find({}, function (err, data) {
+				should.exist(data[0].name);
+				cb();
 			});
 		});
 
-		it('Should have name for the first chef', function () {
-			should.exist(db.Chef.data[0].name);
-		});
-
-		it('Should have "Pierre" name for the first chef', function () {
-			db.Chef.data[0].name.should.equal('Pierre');
+		it('Should have "Pierre" name for the first chef', function (cb) {
+			db.Chef.find({}, function (err, data) {
+				data[0].name.should.equal('Pierre');
+				cb();
+			});
 		});
 
 		after(function () {
@@ -88,26 +69,38 @@ describe('Stalk', function () {
 	});
 
 	describe('After first run - activity database', function () {
-		it('Should have 1 activity', function () {
-			db.Activity.data.should.have.length(1);
+		it('Should have 1 activity', function (cb) {
+			db.Activity.count({}, function (err, data) {
+				data.should.equal(1);
+				cb();
+			});
 		});
 
-		it('Should have 2 chefs on chefsAdded array', function () {
-			should.exist(db.Activity.data[0].chefsAdded);
-			db.Activity.data[0].chefsAdded.should.be.an.instanceOf(Array);
-			db.Activity.data[0].chefsAdded.should.have.length(2);
+		it('Should have 2 chefs on chefsAdded array', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				should.exist(data[0].chefsAdded);
+				data[0].chefsAdded.should.be.an.instanceOf(Array);
+				data[0].chefsAdded.should.have.length(2);
+				cb();
+			});
 		});
 
-		it('Should have 0 chefs on chefsRemoved array', function () {
-			should.exist(db.Activity.data[0].chefsRemoved);
-			db.Activity.data[0].chefsRemoved.should.be.an.instanceOf(Array);
-			db.Activity.data[0].chefsRemoved.should.have.length(0);
+		it('Should have 0 chefs on chefsRemoved array', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				should.exist(data[0].chefsRemoved);
+				data[0].chefsRemoved.should.be.an.instanceOf(Array);
+				data[0].chefsRemoved.should.have.length(0);
+				cb();
+			});
 		});
 
-		it('Should be correctly filed with name and link', function () {
-			var chef = db.Activity.data[0].chefsAdded[0];
-			should.exist(chef.name);
-			should.exist(chef.link);
+		it('Should be correctly filed with name and link', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				var chef = data[0].chefsAdded[0];
+				should.exist(chef.name);
+				should.exist(chef.link);
+				cb();
+			});
 		});
 	});
 
@@ -120,19 +113,27 @@ describe('Stalk', function () {
 
 		it('Should still have 2 chefs', function (cb) {
 			stalk.run(db, function () {
-				db.Chef.data.should.have.length(2);
+				db.Chef.count(function (err, data) {
+					data.should.equal(2);
+					cb();
+				});
+			});
+		});
+
+		it('Should still be ACTIVE', function (cb) {
+			db.Chef.find({}, function (err, data) {
+				data.forEach(function (chef) {
+					chef.status.should.equal('ACTIVE');
+				});
 				cb();
 			});
 		});
 
-		it('Should still be ACTIVE', function () {
-			db.Chef.data.forEach(function (chef){
-				chef.status.should.equal('ACTIVE');
+		it('Should still have 1 activity', function (cb) {
+			db.Activity.count(function (err, data) {
+				data.should.equal(1);
+				cb();
 			});
-		});
-
-		it('Should still have 1 activity', function () {
-			db.Activity.data.should.have.length(1);
 		});
 
 		after(function () {
@@ -149,13 +150,18 @@ describe('Stalk', function () {
 
 		it('Should have 3 chefs', function (cb) {
 			stalk.run(db, function () {
-				db.Chef.data.should.have.length(3);
-				cb();
+				db.Chef.count(function (err, data) {
+					data.should.equal(3);
+					cb();
+				});
 			});
 		});
 
-		it('Should have a second activity', function () {
-			db.Activity.data.should.have.length(2);
+		it('Should have a second activity', function (cb) {
+			db.Activity.count(function (err, data) {
+				data.should.equal(2);
+				cb();
+			});
 		});
 
 		after(function () {
@@ -171,40 +177,55 @@ describe('Stalk', function () {
 		});
 
 		it('Should still have 3 chefs', function (cb) {
-			stalk.run(db, function () {
-				db.Chef.data.should.have.length(3);
+			stalk.run(db, function (err) {
+				should.not.exist(err);
+				db.Chef.count(function (err, data) {
+					data.should.equal(3);
+					cb();
+				});
+			});
+		});
+
+		it('Should have 2 ACTIVE and 1 NOACTIVE', function (cb) {
+			var active = 0;
+			var noactive = 0;
+
+			db.Chef.find({}, function (err, data) {
+				data.forEach(function (chef){
+					if (chef.status === 'ACTIVE') {
+						active += 1;
+					} else if (chef.status == 'NOACTIVE') {
+						noactive += 1;
+					}
+				});
+				active.should.equal(2);
+				noactive.should.equal(1);
 				cb();
 			});
 		});
 
-		it('Should have 2 ACTIVE and 1 NOACTIVE', function () {
-			var active = 0;
-			var noactive = 0;
-
-			db.Chef.data.forEach(function (chef){
-				if (chef.status === 'ACTIVE') {
-					active += 1;
-				} else if (chef.status == 'NOACTIVE') {
-					noactive += 1;
-				}
+		it('Should have a third activity', function (cb) {
+			db.Activity.count({}, function (err, data) {
+				data.should.equal(3);
+				cb();
 			});
-			active.should.equal(2);
-			noactive.should.equal(1);
 		});
 
-		it('Should have a third activity', function () {
-			db.Activity.data.should.have.length(3);
+		it('Should have a third activity with 0 Added & 1 removed', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				data.should.have.length(3);
+				data[2].chefsAdded.should.have.length(0);
+				data[2].chefsRemoved.should.have.length(1);
+				cb();
+			});
 		});
 
-		it('Should have a third activity with 0 Added & 1 removed', function () {
-			db.Activity.data.should.have.length(3);
-			db.Activity.data[2].chefsAdded.should.have.length(0);
-			db.Activity.data[2].chefsRemoved.should.have.length(1);
-		});
-
-		it('Should "Michelle" to be the removed chef', function () {
-			var chef = db.Activity.data[2].chefsRemoved[0];
-			chef.name.should.equal('Michelle');
+		it('Should "Michelle" to be the removed chef', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				var chef = data[2].chefsRemoved[0];
+				chef.name.should.equal('Michelle');
+				cb();
+			});
 		});
 
 		after(function () {
