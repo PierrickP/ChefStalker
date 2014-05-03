@@ -45,7 +45,7 @@ database(function (err, db) {
         });
     });
 
-    app.get('/stalk', function (req, res) {
+    app.all('/stalk', function (req, res) {
         stalk.run(db, function (err) {
             if (err) {
                 res.json(500, {error: err});
