@@ -6,6 +6,7 @@ bodyParser = require('body-parser'),
 swig = require('swig');
 
 var app = express();
+var conf = require('./conf.js');
 var database = require('./db.js')(conf);
 var stalk = require('./stalk.js')(conf);
 
