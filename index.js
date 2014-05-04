@@ -1,10 +1,11 @@
-require('newrelic');
+if (process.env.NEW_RELIC_LICENSE_KEY) {
+    require('newrelic');
+}
 var express = require('express'),
 bodyParser = require('body-parser'),
 swig = require('swig');
 
 var app = express();
-var conf = require('./conf.js');
 var database = require('./db.js')(conf);
 var stalk = require('./stalk.js')(conf);
 
@@ -13,6 +14,8 @@ app.use(bodyParser());
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
+
+app.locals.production = (process.env.NODE_ENV === 'production');
 
 database(function (err, db) {
     if (err) throw err;
@@ -51,6 +54,16 @@ database(function (err, db) {
                 res.json(500, {error: err});
             } else {
                 res.json({status: 'ok'});
+            }
+        });
+    });
+
+    app.get('/chefs', function (req, res) {
+        db.Chef.find({}, {sort: {status: 1}, wrap: false}, function (err, data) {
+            if (err) {
+                res.json(500, {error: err});
+            } else {
+                res.json({chefs: data});
             }
         });
     });

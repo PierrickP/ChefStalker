@@ -12,7 +12,6 @@ module.exports = function (conf) {
 
             async.waterfall([
                 function (next) {
-
                     request(conf.stalk_url, function (err, response, body) {
                         if (err) {
                             next(err);

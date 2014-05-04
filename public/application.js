@@ -14,10 +14,31 @@ angular
     .factory('Stalkers', function ($resource) {
         return $resource('/stalkers');
     })
+    .factory('Chefs', function ($resource) {
+        return $resource('/chefs');
+    })
 
-    .controller('homeController', function ($scope, Activities, Stalkers) {
+    .filter('count', function () {
+        return function (arr, status) {
+            var count = 0;
+            if (arr && Array.isArray(arr)) {
+                arr.forEach(function (el) {
+                    if (el.status === status) {
+                        count += 1;
+                    }
+                });
+            }
+            return count;
+        };
+    })
+
+    .controller('homeController', function ($scope, Activities, Stalkers, Chefs) {
         Activities.get(function (results) {
             $scope.activities = results.activities;
+        });
+
+        Chefs.get(function (results) {
+            $scope.chefs = results.chefs;
         });
 
         $scope.addEmail = function () {

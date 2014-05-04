@@ -1,0 +1,84 @@
+@import "bower_components/knacss/less/knacss.less";
+
+@basecolor: #D1CCB5; // text color on body
+@basebg: #2A221C; // body background color
+@basecolor-link: #738528; // primary links color;
+@basecolor-link-hover: #BAA920; // primary hovered/focused links color;
+
+@titlecolor: #847E62;
+
+@active: green;
+
+body {
+    background-color: @basebg;
+    background-image: url('stalker.png');
+    background-repeat: no-repeat;
+    background-position: right top;
+    background-size: 250px;
+    color: @basecolor;
+}
+
+a {
+    color: @basecolor-link;
+    text-decoration: none;
+
+    &:hover {
+        color: @basecolor-link-hover;
+    }
+}
+
+input[type="email"] {
+    border-radius: 3px;
+    border: 1px solid @basecolor-link-hover;
+    padding: 3px 5px;
+}
+
+input[type="submit"] {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: rgb(28, 184, 65);
+    border: 0 rgba(0,0,0,0);
+    padding: .5em 1em;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+
+    &>li.activity {
+        margin-bottom: 10px;
+    }
+
+    li > ul {
+        padding-left: 15px;
+    }
+
+    &.chefs-added {
+        border-left: 3px solid @active;
+    }
+
+    &.chefs-removed {
+        border-left: 3px solid red;
+    }
+}
+
+#chefs .chef {
+    display: inline-block;
+    height: 80px;
+    width: 80px;
+
+    &.ACTIVE {
+        background: url('/chef_active.svg');
+        background-size: contain;
+    }
+
+    &.NOACTIVE {
+        background: url('/chef_noactive.svg');
+        background-size: contain;
+    }
+}
+
+.active {
+    color: @active;
+}
