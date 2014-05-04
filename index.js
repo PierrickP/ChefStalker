@@ -1,10 +1,11 @@
-require('newrelic');
+if (process.env.NEW_RELIC_LICENSE_KEY) {
+    require('newrelic');
+}
 var express = require('express'),
 bodyParser = require('body-parser'),
 swig = require('swig');
 
 var app = express();
-var conf = require('./conf.js');
 var database = require('./db.js')(conf);
 var stalk = require('./stalk.js')(conf);
 
