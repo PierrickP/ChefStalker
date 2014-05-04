@@ -1,8 +1,8 @@
 <div class="line">
     <form ng-submit="addEmail()" name="stalkersForm">
-    <label for="email">Want to be notified</label>
-    <input ng-model="email" name="email" type="email" id="myName" placeholder="Email" required>
-    <input type="submit" value="Add me" class="btn">
+        <label for="email">Want to be notified</label>
+        <input ng-model="email" name="email" type="email" id="myName" placeholder="Email" required>
+        <input type="submit" value="Add me" class="btn">
     </form>
 </div>
 
@@ -10,7 +10,7 @@
     <div class="grid2">
         <div id="chefs">
             <h3>{{ chefs | count:'ACTIVE'  }} Chefs <span class="active">ACTIVE</span></h3>
-            <a ng-repeat="chef in chefs" class="chef" ng-class="chef.status" ng-href="{{ chef.status == 'ACTIVE' ? chef.link : '#' }}" title="{{ chef.name }}"></a>
+            <a ng-repeat="chef in chefs" class="chef" ng-class="chef.status" ng-href="{{ chef.status == 'ACTIVE' ? chef.link : '#' }}" title="{{ chef.name }}" rel="nofollow"></a>
         </div>
         <div>
             <ul>
@@ -19,7 +19,7 @@
                     <p ng-show="activity.chefsAdded.length > 0">
                         <ul class="chefs-added">
                             <li ng-repeat="chef in activity.chefsAdded">
-                                <a ng-href="{{ chef.link }}">{{ chef.name }}</a>
+                                <a ng-href="{{ chef.link }}" rel="nofollow">{{ chef.name }}</a>
                             </li>
                         </ul>
                     </p>
