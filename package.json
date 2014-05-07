@@ -19,14 +19,16 @@
         "gulp-less": "^1.2.3"
     },
     "devDependencies": {
+        "coveralls": "~2.10.0",
+        "istanbul": "~0.2.8",
         "mocha": "1.12.x",
-        "should": "1.2.x",
-        "nock": "0.28.2"
+        "nock": "0.28.2",
+        "should": "1.2.x"
     },
     "scripts": {
         "postinstall": "node_modules/.bin/bower install; node_modules/.bin/gulp",
-        "test": "node_modules/mocha/bin/_mocha test/runner.js -R spec"
+        "test": "istanbul cover node_modules/.bin/_mocha test/runner.js --report lcovonly -- -R spec && cat ./coverage/lcov.info | node_modules/.bin/coveralls && rm -rf ./coverage"
     },
-    "author": "",
+    "author": "Pierrick Paul <mulotmail@gmail.com>",
     "license": "MIT"
 }
