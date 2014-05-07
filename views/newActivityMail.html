@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>*|MC:SUBJECT|*</title>
+        <title>Activity Report</title>
         <style type="text/css">
 			/* /\/\/\/\/\/\/\/\/ CLIENT-SPECIFIC STYLES /\/\/\/\/\/\/\/\/ */
 			#outlook a{padding:0;} /* Force Outlook to provide a "view in browser" message */
@@ -32,7 +32,7 @@
 			* @theme page
 			*/
 			body, #bodyTable{
-				/*@editable*/ background-color:#DEE0E2;
+				/*@editable*/ background-color:#564539;
 			}
 
 			/**
@@ -42,7 +42,7 @@
 			* @theme page
 			*/
 			#bodyCell{
-				/*@editable*/ border-top:4px solid #BBBBBB;
+				/*@editable*/ border-top:4px solid #BAA920;
 			}
 
 			/**
@@ -51,7 +51,7 @@
 			* @tip Set the border for your email.
 			*/
 			#templateContainer{
-				/*@editable*/ border:1px solid #BBBBBB;
+				/*@editable*/ border:3px solid #738528;
 			}
 
 			/**
@@ -61,7 +61,7 @@
 			* @style heading 1
 			*/
 			h1{
-				/*@editable*/ color:#202020 !important;
+				/*@editable*/ color:#847E62 !important;
 				display:block;
 				/*@editable*/ font-family:Helvetica;
 				/*@editable*/ font-size:26px;
@@ -83,7 +83,7 @@
 			* @style heading 2
 			*/
 			h2{
-				/*@editable*/ color:#404040 !important;
+				/*@editable*/ color:#847E62 !important;
 				display:block;
 				/*@editable*/ font-family:Helvetica;
 				/*@editable*/ font-size:20px;
@@ -105,7 +105,7 @@
 			* @style heading 3
 			*/
 			h3{
-				/*@editable*/ color:#606060 !important;
+				/*@editable*/ color:#738528 !important;
 				display:block;
 				/*@editable*/ font-family:Helvetica;
 				/*@editable*/ font-size:16px;
@@ -152,7 +152,7 @@
 			*/
 			#templatePreheader{
 				/*@editable*/ background-color:#F4F4F4;
-				/*@editable*/ border-bottom:1px solid #CCCCCC;
+				/*@editable*/ border-bottom:0px solid #CCCCCC;
 			}
 
 			/**
@@ -187,8 +187,8 @@
 			*/
 			#templateHeader{
 				/*@editable*/ background-color:#F4F4F4;
-				/*@editable*/ border-top:1px solid #FFFFFF;
-				/*@editable*/ border-bottom:1px solid #CCCCCC;
+				/*@editable*/ border-top:0px solid #FFFFFF;
+				/*@editable*/ border-bottom:0px solid #CCCCCC;
 			}
 
 			/**
@@ -234,9 +234,9 @@
 			* @tip Set the background color and borders for your email's body area.
 			*/
 			#templateBody{
-				/*@editable*/ background-color:#F4F4F4;
+				/*@editable*/ background-color:#2A221C;
 				/*@editable*/ border-top:1px solid #FFFFFF;
-				/*@editable*/ border-bottom:1px solid #CCCCCC;
+				/*@editable*/ border-bottom:0px solid #CCCCCC;
 			}
 
 			/**
@@ -246,7 +246,7 @@
 			* @theme main
 			*/
 			.bodyContent{
-				/*@editable*/ color:#505050;
+				/*@editable*/ color:#D1CCB5;
 				/*@editable*/ font-family:Helvetica;
 				/*@editable*/ font-size:14px;
 				/*@editable*/ line-height:150%;
@@ -267,7 +267,7 @@
 			* @tip Set the styling for your email's main content links. Choose a color that helps them stand out from your text.
 			*/
 			.bodyContent a:link, .bodyContent a:visited, /* Yahoo! Mail Override */ .bodyContent a .yshortcuts /* Yahoo! Mail Override */{
-				/*@editable*/ color:#EB4102;
+				/*@editable*/ color:#738528;
 				/*@editable*/ font-weight:normal;
 				/*@editable*/ text-decoration:underline;
 			}
@@ -315,7 +315,7 @@
 			* @tip Set the styling for your email's footer links. Choose a color that helps them stand out from your text.
 			*/
 			.footerContent a:link, .footerContent a:visited, /* Yahoo! Mail Override */ .footerContent a .yshortcuts, .footerContent a span /* Yahoo! Mail Override */{
-				/*@editable*/ color:#606060;
+				/*@editable*/ color:#738528;
 				/*@editable*/ font-weight:normal;
 				/*@editable*/ text-decoration:underline;
 			}
@@ -450,7 +450,7 @@
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                                         <tr>
                                             <td valign="top" class="headerContent">
-                                            	<img src="http://gallery.mailchimp.com/2425ea8ad3/images/header_placeholder_600px.png" style="max-width:600px;" id="headerImage" mc:label="header_image" mc:edit="header_image" mc:allowdesigner mc:allowtext />
+                                            	<img src="http://chefstalker.herokuapp.com/emailHeader.jpg" style="max-width:600px;" id="headerImage" />
                                             </td>
                                         </tr>
                                     </table>
@@ -462,7 +462,7 @@
                                 	<!-- BEGIN BODY // -->
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
                                         <tr>
-                                            <td valign="top" class="bodyContent" mc:edit="body_content">
+                                            <td valign="top" class="bodyContent">
                                                 <h1>New activity on the stalked website</h1>
                                                 <h3 class="subtitleDate">{{ date | date('d/m/Y H:i') }}</h3>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" id="chefsTable">
