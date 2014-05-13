@@ -9,7 +9,7 @@ module.exports = function (db, conf) {
         transaction = nodemailer.createTransport('SMTP', {
             host: 'smtp.mandrillapp.com',
             secureConnection: true,
-            port: 587,
+            port: 465,
             auth: {
                 user: conf.mail_user,
                 pass: conf.mail_pass
@@ -28,6 +28,7 @@ module.exports = function (db, conf) {
                 var html = swig.compileFile(__dirname + '/views/newActivityMail.html')(activity);
 
                 var mailOptions = {
+                    from: 'Chef Stalker <' + conf.mail_user + '>',
                     bcc: bcc.join(','),
                     subject: 'New Activity on Chef Stalker',
                     generateTextFromHTML: true,
