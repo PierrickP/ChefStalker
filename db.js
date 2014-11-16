@@ -24,6 +24,10 @@ module.exports = function (conf) {
         chefsRemoved: [{
             name: String,
             link: String
+        }],
+        chefsReactivated: [{
+            name: String,
+            link: String
         }]
     }));
 

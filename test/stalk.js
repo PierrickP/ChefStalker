@@ -39,7 +39,9 @@ describe('Stalk', function () {
 		it('Should have 2 chefs', function (cb) {
 			stalk.run(db, function () {
 				db.Chef.count(function (err, data) {
+					should.not.exist(err);
 					data.should.equal(2);
+
 					cb();
 				});
 			});
@@ -47,23 +49,29 @@ describe('Stalk', function () {
 
 		it('Should be ACTIVE', function (cb) {
 			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
 				data.forEach(function (chef) {
 					chef.status.should.equal('ACTIVE');
 				});
+
 				cb();
 			});
 		});
 
 		it('Should have name for the first chef', function (cb) {
 			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
 				should.exist(data[0].name);
+
 				cb();
 			});
 		});
 
 		it('Should have "Pierre" name for the first chef', function (cb) {
 			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
 				data[0].name.should.equal('Pierre');
+
 				cb();
 			});
 		});
@@ -76,34 +84,42 @@ describe('Stalk', function () {
 	describe('After first run - activity database', function () {
 		it('Should have 1 activity', function (cb) {
 			db.Activity.count({}, function (err, data) {
+				should.not.exist(err);
 				data.should.equal(1);
+
 				cb();
 			});
 		});
 
 		it('Should have 2 chefs on chefsAdded array', function (cb) {
 			db.Activity.find({}, function (err, data) {
+				should.not.exist(err);
 				should.exist(data[0].chefsAdded);
 				data[0].chefsAdded.should.be.an.instanceOf(Array);
 				data[0].chefsAdded.should.have.length(2);
+
 				cb();
 			});
 		});
 
 		it('Should have 0 chefs on chefsRemoved array', function (cb) {
 			db.Activity.find({}, function (err, data) {
+				should.not.exist(err);
 				should.exist(data[0].chefsRemoved);
 				data[0].chefsRemoved.should.be.an.instanceOf(Array);
 				data[0].chefsRemoved.should.have.length(0);
+
 				cb();
 			});
 		});
 
 		it('Should be correctly filed with name and link', function (cb) {
 			db.Activity.find({}, function (err, data) {
+				should.not.exist(err);
 				var chef = data[0].chefsAdded[0];
 				should.exist(chef.name);
 				should.exist(chef.link);
+
 				cb();
 			});
 		});
@@ -119,7 +135,9 @@ describe('Stalk', function () {
 		it('Should still have 2 chefs', function (cb) {
 			stalk.run(db, function () {
 				db.Chef.count(function (err, data) {
+					should.not.exist(err);
 					data.should.equal(2);
+
 					cb();
 				});
 			});
@@ -127,16 +145,20 @@ describe('Stalk', function () {
 
 		it('Should still be ACTIVE', function (cb) {
 			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
 				data.forEach(function (chef) {
 					chef.status.should.equal('ACTIVE');
 				});
+
 				cb();
 			});
 		});
 
 		it('Should still have 1 activity', function (cb) {
 			db.Activity.count(function (err, data) {
+				should.not.exist(err);
 				data.should.equal(1);
+
 				cb();
 			});
 		});
@@ -156,7 +178,9 @@ describe('Stalk', function () {
 		it('Should have 3 chefs', function (cb) {
 			stalk.run(db, function () {
 				db.Chef.count(function (err, data) {
+					should.not.exist(err);
 					data.should.equal(3);
+
 					cb();
 				});
 			});
@@ -164,7 +188,9 @@ describe('Stalk', function () {
 
 		it('Should have a second activity', function (cb) {
 			db.Activity.count(function (err, data) {
+				should.not.exist(err);
 				data.should.equal(2);
+
 				cb();
 			});
 		});
@@ -185,7 +211,9 @@ describe('Stalk', function () {
 			stalk.run(db, function (err) {
 				should.not.exist(err);
 				db.Chef.count(function (err, data) {
+					should.not.exist(err);
 					data.should.equal(3);
+
 					cb();
 				});
 			});
@@ -196,6 +224,7 @@ describe('Stalk', function () {
 			var noactive = 0;
 
 			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
 				data.forEach(function (chef){
 					if (chef.status === 'ACTIVE') {
 						active += 1;
@@ -205,13 +234,16 @@ describe('Stalk', function () {
 				});
 				active.should.equal(2);
 				noactive.should.equal(1);
+
 				cb();
 			});
 		});
 
 		it('Should have a third activity', function (cb) {
 			db.Activity.count({}, function (err, data) {
+				should.not.exist(err);
 				data.should.equal(3);
+
 				cb();
 			});
 		});
@@ -221,14 +253,17 @@ describe('Stalk', function () {
 				data.should.have.length(3);
 				data[2].chefsAdded.should.have.length(0);
 				data[2].chefsRemoved.should.have.length(1);
+
 				cb();
 			});
 		});
 
 		it('Should "Michelle" to be the removed chef', function (cb) {
 			db.Activity.find({}, function (err, data) {
+				should.not.exist(err);
 				var chef = data[2].chefsRemoved[0];
 				chef.name.should.equal('Michelle');
+
 				cb();
 			});
 		});
@@ -238,4 +273,47 @@ describe('Stalk', function () {
 		});
 	});
 
+	describe('After reactivate chef', function () {
+		before(function () {
+			nock('http://localhost')
+				.get('/chef')
+				.replyWithFile(200, __dirname + '/three_chefs.html');
+		});
+
+		it('Should have 3 ACTIVE', function (cb) {
+			stalk.run(db, function (err) {
+				should.not.exist(err);
+
+				db.Chef.count({status: 'ACTIVE'}, function (err, count) {
+					should.not.exist(err);
+					count.should.equal(3);
+
+					cb();
+				});
+			});
+		});
+
+		it('Should have a 4th activity', function (cb) {
+			db.Activity.count(function (err, data) {
+				should.not.exist(err);
+				data.should.equal(4);
+
+				cb();
+			});
+		});
+
+		it('Should have 1 chefs on chefsReactivated array', function (cb) {
+			db.Activity.find({}, function (err, data) {
+				should.exist(data[3].chefsReactivated);
+				data[3].chefsReactivated.should.be.an.instanceOf(Array);
+				data[3].chefsReactivated.should.have.length(1);
+
+				cb();
+			});
+		});
+
+		after(function () {
+			nock.cleanAll();
+		});
+	});
 });

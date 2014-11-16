@@ -9,6 +9,7 @@ module.exports = function (conf) {
             var chefs = [];
             var newChefs = [];
             var removedChefs = [];
+            var reactivatedChefs = [];
 
             async.waterfall([
                 function (next) {
@@ -29,7 +30,7 @@ module.exports = function (conf) {
                         next(null);
                     });
                 },
-                function (next) {
+                function activeChef(next) {
                     async.each(chefs, function (chef, nextChef) {
                         db.Chef.findOne({name: chef.name}, function (err, obj) {
                             if (err) {
@@ -56,7 +57,20 @@ module.exports = function (conf) {
                         });
                     }, next);
                 },
-                function (next) {
+                function reactivatedChef(next) {
+                    var chefsName = _.pluck(chefs, 'name');
+                    db.Chef.find({name: {$in: chefsName}, status: 'NOACTIVE'}, function (err, chefsToReactivate) {
+                        async.each(chefsToReactivate, function (chefToReactivate, nextChef) {
+                            reactivatedChefs.push({
+                                name: chefToReactivate.name,
+                                link: chefToReactivate.link
+                            });
+                            chefToReactivate.status = 'ACTIVE';
+                            chefToReactivate.save({$set: {status: 'ACTIVE'}}, nextChef);
+                        }, next);
+                    });
+                },
+                function deactivateChef(next) {
                     var chefsName = _.pluck(chefs, 'name');
                     db.Chef.find({name: {$nin: chefsName}}, function (err, chefsToDeactivate) {
                         async.each(chefsToDeactivate, function (chefToDeactivate, nextChef) {
@@ -69,7 +83,7 @@ module.exports = function (conf) {
                     });
                 },
                 function (next) {
-                    if (newChefs.length > 0 || removedChefs.length > 0) {
+                    if (newChefs.length > 0 || removedChefs.length > 0 || reactivatedChefs.length > 0) {
                         db.Activity.create({
                             date: new Date(),
                             chefsAdded: _.map(newChefs, function (chef) {
@@ -82,6 +96,12 @@ module.exports = function (conf) {
                                 return {
                                     name: chef.name,
                                     link: '#'
+                                };
+                            }),
+                            chefsReactivated: _.map(reactivatedChefs, function (chef) {
+                                return {
+                                    name: chef.name,
+                                    link: chef.link
                                 };
                             })
                         }, cb);
