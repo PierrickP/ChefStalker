@@ -30,6 +30,13 @@
                             </li>
                         </ul>
                     </p>
+                    <p ng-show="activity.chefsReactivated.length > 0">
+                        <ul class="chefs-added">
+                            <li ng-repeat="chef in activity.chefsReactivated">
+                                <a ng-href="{{ chef.link }}" rel="nofollow">{{ chef.name }}</a>
+                            </li>
+                        </ul>
+                    </p>
                 </li>
             </ul>
         </div>
