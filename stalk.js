@@ -72,7 +72,7 @@ module.exports = function (conf) {
                 },
                 function deactivateChef(next) {
                     var chefsName = _.pluck(chefs, 'name');
-                    db.Chef.find({name: {$nin: chefsName}}, function (err, chefsToDeactivate) {
+                    db.Chef.find({name: {$nin: chefsName}, status: 'ACTIVE'}, function (err, chefsToDeactivate) {
                         async.each(chefsToDeactivate, function (chefToDeactivate, nextChef) {
                             removedChefs.push({
                                 name: chefToDeactivate.name

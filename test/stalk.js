@@ -273,6 +273,59 @@ describe('Stalk', function () {
 		});
 	});
 
+	describe('After third run', function () {
+		before(function () {
+			nock('http://localhost')
+				.get('/chef')
+				.replyWithFile(200, __dirname + '/two_chefs.html');
+		});
+
+		it('Should still have 3 chefs', function (cb) {
+			stalk.run(db, function (err) {
+				should.not.exist(err);
+				db.Chef.count(function (err, data) {
+					should.not.exist(err);
+					data.should.equal(3);
+
+					cb();
+				});
+			});
+		});
+
+		it('Should have 2 ACTIVE and 1 NOACTIVE', function (cb) {
+			var active = 0;
+			var noactive = 0;
+
+			db.Chef.find({}, function (err, data) {
+				should.not.exist(err);
+				data.forEach(function (chef){
+					if (chef.status === 'ACTIVE') {
+						active += 1;
+					} else if (chef.status == 'NOACTIVE') {
+						noactive += 1;
+					}
+				});
+				active.should.equal(2);
+				noactive.should.equal(1);
+
+				cb();
+			});
+		});
+
+		it('Should still have a third activity', function (cb) {
+			db.Activity.count({}, function (err, data) {
+				should.not.exist(err);
+				data.should.equal(3);
+
+				cb();
+			});
+		});
+
+		after(function () {
+			nock.cleanAll();
+		});
+	});
+
 	describe('After reactivate chef', function () {
 		before(function () {
 			nock('http://localhost')
